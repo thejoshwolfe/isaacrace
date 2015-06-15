@@ -5,6 +5,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   mood_music_audio.loop = true;
   var huzzah_audio = [
     new Audio("fans.mp3"),
+    new Audio("bad.mp3"),
   ];
   var requestAnimationFrame = window.requestAnimationFrame;
 
@@ -26,45 +27,42 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
         profile_img: "img/faces/andy.png",
       },
       {
+        name: "Philip",
+        times: [],
+        profile_img: "img/faces/philip.png",
+      },
+      {
         name: "Lukas",
         times: [],
         profile_img: "http://media.steampowered.com/steamcommunity/public/images/avatars/22/22810a6ecd7c4532209c4606ae0b9d95bc5898db_full.jpg",
       },
       {
-        name: "James",
+        name: "Mike",
         times: [],
-        profile_img: "img/faces/james.png",
+        profile_img: "http://cdn.akamai.steamstatic.com/steamcommunity/public/images/avatars/55/55160fd1444d09d7c7a16693affca26cde11a8e6_full.jpg",
       },
     ],
     gameState: 'setup',
     checkpoints: [
       {
-        name: "Iggy",
-        img_src: "img/checkpoints/iggy.png",
+        name: "Isaac 1",
+        img_src: "img/checkpoints/isaac.png",
       },
       {
-        name: "Morton",
-        img_src: "img/checkpoints/morton.png",
+        name: "Slow Roll",
+        img_src: "img/checkpoints/poly.png",
       },
       {
-        name: "Lemmy",
-        img_src: "img/checkpoints/lemmy.png",
+        name: "Isaac 2",
+        img_src: "img/checkpoints/isaac.png",
       },
       {
-        name: "Ludwig",
-        img_src: "img/checkpoints/ludwig.png",
+        name: "Computer Savvy",
+        img_src: "img/checkpoints/tech.png",
       },
       {
-        name: "Roy",
-        img_src: "img/checkpoints/roy.png",
-      },
-      {
-        name: "Wendy",
-        img_src: "img/checkpoints/wendy.png",
-      },
-      {
-        name: "Bowser",
-        img_src: "img/checkpoints/bowser.png",
+        name: "Isaac 3",
+        img_src: "img/checkpoints/isaac.png",
       },
     ],
     current_checkpoint: 0,
@@ -126,11 +124,15 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
     happyFunTimeAudio.play();
   };
 
-  $scope.personIsDone = function(person) {
+  $scope.personIsDone = function(person, died) {
     var checkpoint_index = $scope.state.current_checkpoint;
     var checkpoint = $scope.currentCheckpoint();
-    var end_time = new Date();
-    person.times[checkpoint_index] = end_time - checkpoint.start;
+    if (died) {
+      person.times[checkpoint_index] = FAILED;
+    } else {
+      person.times[checkpoint_index] = new Date() - checkpoint.start;
+    }
+
     var all_done = $scope.state.people.every(function(person) {
       return !!person.times[checkpoint_index];
     });
@@ -138,16 +140,8 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       $scope.state.current_checkpoint += 1;
     }
     saveState();
-    var audio = huzzah_audio[Math.floor(Math.random() * huzzah_audio.length)];
+    var audio = huzzah_audio[died ? 1 : 0];
     audio.play();
-  };
-
-  $scope.totalTime = function(person) {
-    var total_time = 0;
-    person.times.forEach(function(time) {
-      if (time) total_time += time;
-    });
-    return total_time;
   };
 
   $scope.rupeesForCheckpoint = function(person, checkpoint_index) {
@@ -159,19 +153,14 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function rupeesForSomething(person, timeForPerson) {
     var my_time = timeForPerson(person);
     if (!my_time) return "";
+    if (my_time === FAILED) return 0;
     var rupees = 0;
     $scope.state.people.forEach(function(other) {
       var their_time = timeForPerson(other);
-      if (!their_time || my_time < their_time) rupees += 1;
+      if (!their_time || their_time === FAILED || my_time < their_time) rupees += 1;
     });
     return rupees;
   }
-
-  $scope.rupeesForTotalTime = function(person) {
-    return rupeesForSomething(person, function(person) {
-      return $scope.totalTime(person);
-    });
-  };
 
   $scope.totalRupees = function(person) {
     var rupees = 0;
@@ -180,12 +169,10 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
       prt = $scope.rupeesForCheckpoint(person, i);
       if (prt) rupees += prt;
     }
-    prt = $scope.rupeesForTotalTime(person);
-    if (prt) rupees += prt;
     return rupees;
   };
 
-  loadState(localStorage.marioworldrace);
+  loadState(localStorage.isaacrace);
 
   requestAnimationFrame(function animateClock() {
     var clock = document.getElementById("clock");
@@ -300,7 +287,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
 
   function saveState() {
     sortPeople();
-    localStorage.marioworldrace = window.angular.toJson($scope.state);
+    localStorage.isaacrace = window.angular.toJson($scope.state);
     playPauseMusic();
   }
 
@@ -321,7 +308,7 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
 
   $scope.resetState = function() {
     if (confirm("delete all 50 states?")) {
-      delete localStorage.marioworldrace;
+      delete localStorage.isaacrace;
       location.href = location.href;
     }
   };
@@ -329,9 +316,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   function currentTitle() {
     if ($scope.state.gameState === "race") {
       var checkpoint = $scope.currentCheckpoint();
-      if (checkpoint) return checkpoint.name + " - Mario World Race - ";
+      if (checkpoint) return checkpoint.name + " - The Binding of Isaac: Rebirth Race - ";
     }
-    return "Mario World Race - ";
+    return "The Binding of Isaac: Rebirth Race - ";
   }
 
   var marqueeIndex = 0;
@@ -345,7 +332,9 @@ window.APP = window.angular.module('main', []).controller('MainCtrl', function($
   }
 });
 
+var FAILED = "failed";
 function formatMs(ms, include_ms) {
+  if (ms === FAILED) return "x_x";
   if (!ms) return "";
   var result = "";
   if (ms < 0) {
@@ -392,8 +381,9 @@ window.APP.directive('rupeeDisplay', function() {
       elem[0].innerHTML = "";
 
       var units = [
-        {name: "moon", value: 3},
-        {name: "1up", value: 1},
+        {name: "dime", value: 10},
+        {name: "nickel", value: 5},
+        {name: "penny", value: 1},
       ];
 
       for (var i = 0; i < units.length; i++) {

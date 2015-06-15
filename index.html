@@ -1,7 +1,7 @@
 <!doctype html>
 <html ng-app="main">
   <head>
-    <title>Mario World Race -</title>
+    <title>The Binding of Isaac: Rebirth Race -</title>
     <link rel="stylesheet" href="zzzzzzzzzzzz.css">
     <script src="angular.js"></script>
     <script src="zrt.js"></script>
@@ -20,9 +20,9 @@
       <button ng-click="save()">Save</button>
       <button ng-click="startGame()">Start Game</button>
       <br>
-      <img src="img/lol/basebale.gif" style="height:300px">
-      <img src="img/lol/dropshi.gif" style="height:150px">
-      <img src="img/lol/magic_carpet_ride.gif" style="height:300px">
+      <img src="img/lol/run-around.gif" style="height:250px">
+      <img src="img/lol/mag.png" style="height:200px">
+      <img src="img/lol/death.gif" style="height:300px">
     </div>
     <div ng-show="state.gameState == 'race'">
       <img src="img/standby.png" id="light-standby">
@@ -34,30 +34,25 @@
       <button ng-show="readyToStart()" ng-click="readySetGo()" style="width:100%; font-size:50px;">
         <div style="position: relative; left: 0; top: 0;">
           <img src="img/logo.png" class="fadeout" style="position: relative; top: 0; left: 0; height: 100px;">
-          <img ng-src="{{ currentCheckpoint().img_src }}" class="fadein" style="position: absolute; top: 35%; left: 40%; max-width: 140px;">
+          <img ng-src="{{ currentCheckpoint().img_src }}" class="fadein" style="position: absolute; top: 35%; left: 40%; height: 80px;">
         </div>
         START GO!!!!!!
       </button>
-      <img ng-show="isGameOver()" src="img/lol/done.gif" style="width:400px;">
+      <img ng-show="isGameOver()" src="img/lol/pictures.gif" style="width:400px;">
       <table>
         <tr>
           <th>
-            <img src="img/lol/wok.gif" style="width:50px">
+            <img src="img/lol/mom.png" style="width:50px">
           </th>
           <th ng-repeat="checkpoint in state.checkpoints">
-            <img ng-src="{{checkpoint.img_src}}" style="max-width: 60px">
+            <img ng-src="{{checkpoint.img_src}}" style="height: 80px">
             <br>
             {{ checkpoint.name }}
           </th>
           <th>
-            <img src="img/berry.png" style="width:60px">
+            <img src="img/sack.png" style="width:50px">
             <br>
-            Total<br>Clocks
-          </th>
-          <th>
-            <img src="img/lol/limbo.gif" style="width:60px">
-            <br>
-            Score
+            $$$
           </th>
         </tr>
         <tr ng-repeat="person in state.people">
@@ -73,13 +68,10 @@
               <br>
               <div rupee-display rupee-count="rupeesForCheckpoint(person, $index)"></div>
             </div>
-            <button ng-show="state.checkpoints[$index].start && !person.times[$index]"
-                    ng-click="personIsDone(person)">{{person.name}} Done</button>
-          </td>
-          <td class="time-display">
-            {{ totalTime(person) | formatMs }}
-            <br>
-            <div rupee-display rupee-count="rupeesForTotalTime(person)"></div>
+            <div ng-show="state.checkpoints[$index].start && !person.times[$index]">
+              <button ng-click="personIsDone(person)">{{person.name}} Done</button><br>
+              <button ng-click="personIsDone(person, true)">{{person.name}} Failed</button>
+            </div>
           </td>
           <td>
             <div rupee-display rupee-count="totalRupees(person)"></div>
@@ -87,9 +79,9 @@
         </tr>
       </table>
       <br>
-      <img src="img/lol/dont_stop.gif" style="height:200px">
-      <img src="img/lol/pingbap.gif" style="height:100px">
-      <img src="img/lol/jumpoop.gif" style="height:300px">
+      <img src="img/lol/dingle.gif" style="height:100px">
+      <img src="img/lol/stand.gif" style="height:300px">
+      <img src="img/lol/fatty.gif" style="height:100px">
       <br>
       <button ng-click="backToSetup()">Back</button>
     </div>
